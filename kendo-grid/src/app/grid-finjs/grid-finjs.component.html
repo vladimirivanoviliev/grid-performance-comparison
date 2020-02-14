@@ -1,0 +1,188 @@
+<div class="controls-holder">
+  <div class="switches">
+    <div class="control-item">
+      <label>
+        <kendo-switch (valueChange)="onGroupedChange()"></kendo-switch>
+        Grouped
+      </label>
+    </div>
+    <div class="fintech-slider control-item">
+      <label>
+        Records: {{volume}}
+        <kendo-slider
+          [min]="0" [max]="10000"
+          [smallStep]="100" tickPlacement="none" [showButtons]="false"
+          (valueChange)="dataChange()" [(ngModel)]="volume"
+          [disabled]="updating">
+        </kendo-slider>
+      </label>
+    </div>
+    <div class="fintech-slider control-item">
+      <label>
+        Frequency: {{frequency}} ms
+        <kendo-slider
+         [min]="100" [max]="3000"
+         [smallStep]="10" tickPlacement="none" [showButtons]="false"
+         (valueChange)="dataChange()" [(ngModel)]="frequency"
+         [disabled]="updating"
+         ></kendo-slider>
+      </label>
+    </div>
+  </div>
+  <div class="control-item fintech-play-controls">
+    <kendo-buttongroup class="fintechsample-btn-group" selection="single">
+      <button kendoButton #updateButton="kendoButton" [toggleable]="true" icon="refresh" (click)="startUpdate()">Live Price</button>
+      <button kendoButton #updateAllButton="kendoButton" [toggleable]="true" icon="refresh" (click)="startUpdateAll()">Live All Prices</button>
+      <button kendoButton [toggleable]="true" [selected]="true" icon="stop" (click)="resetData()">Stop</button>
+      <button kendoButton icon="cancel" (click)="clearData()">Clear</button>
+    </kendo-buttongroup>
+  </div>
+</div>
+<div class="sample-toolbar">
+  <span *ngIf="updateButton.selected">Feeding {{volume}} records every {{frequency / 1000}} sec.
+    ~{{volume/5}} records updated.</span>
+  <span *ngIf="updateAllButton.selected">Feeding {{volume}} records every {{frequency / 1000}} sec.
+    {{volume}} records updated. </span>
+</div>
+<kendo-grid [kendoGridGroupBinding]="data | async"
+            [(group)]="group"
+            [(sort)]="sort"
+            kendoGridSelectBy="ID"
+            [virtualColumns]="true"
+            scrollable="virtual"
+            [rowHeight]="40"
+            [pageSize]="25"
+            [sortable]="true"
+            [navigable]="true"
+            [resizable]="true"
+            [groupable]="true"
+            filterable="menu"
+            height="800"
+            width="100%">
+  <kendo-grid-checkbox-column showSelectAll="true" [width]="45"></kendo-grid-checkbox-column>
+  <kendo-grid-column field="Category" [width]="120"></kendo-grid-column>
+  <kendo-grid-column field="Type" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Contract" [width]="110"></kendo-grid-column>
+  <kendo-grid-column field="Settlement" [width]="100"></kendo-grid-column>
+  <kendo-grid-column field="Region" [width]="110"></kendo-grid-column>
+  <kendo-grid-column field="Country" [width]="100"></kendo-grid-column>
+  <kendo-grid-column field="Open Price" [width]="120" class="numeric" filter="numeric" format="c4"></kendo-grid-column>
+  <kendo-grid-column field="Price" [width]="130" class="numeric" filter="numeric">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div class="fintech-icons" [ngClass]="trends(dataItem)">
+        <span>{{dataItem.Price | currency:'USD':'symbol':'1.4-4'}}</span>
+        <span *ngIf="trends(dataItem).positive" class="k-icon k-i-arrow-60-up"></span>
+        <span *ngIf="trends(dataItem).negative" class="k-icon k-i-arrow-60-down"></span>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column field="Change" [width]="90" class="numeric change" filter="numeric" headerClass="headerAlignStyle">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div [ngClass]="trends(dataItem)">
+        {{ dataItem.Change | number }}
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column field="Change(%)" [width]="90" class="numeric change" filter="numeric">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div [ngClass]="trends(dataItem)">
+        {{ dataItem['Change(%)'] | number:'1.0-2' }}%
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column field="Buy" [width]="110" class="numeric" filter="numeric" format="c4"></kendo-grid-column>
+  <kendo-grid-column field="Sell" [width]="110" class="numeric" filter="numeric" format="c4"></kendo-grid-column>
+  <kendo-grid-column field="Spread" [width]="110" class="numeric" filter="numeric" format="n2"></kendo-grid-column>
+  <kendo-grid-column field="Volume" [width]="110" class="numeric" filter="numeric" format="n2"></kendo-grid-column>
+  <kendo-grid-column field="High(D)" [width]="110" class="numeric" filter="numeric" format="c4"></kendo-grid-column>
+  <kendo-grid-column field="Low(D)" [width]="110" class="numeric" filter="numeric" format="c4"></kendo-grid-column>
+  <kendo-grid-column field="High(Y)" [width]="110" class="numeric" filter="numeric" format="c4"></kendo-grid-column>
+  <kendo-grid-column field="Low(Y)" [width]="110" class="numeric" filter="numeric" format="c4"></kendo-grid-column>
+  <kendo-grid-column field="Start(Y)" [width]="110" class="numeric" filter="numeric" format="c4"></kendo-grid-column>
+  <kendo-grid-column field="Chart" [width]="60" class="center-text">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <button kendoButton icon="k-i-toggle-full-screen-mode">
+      </button>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column field="IndGrou" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IndSect" [width]="120" [filterable]='false' [resizable]='true'></kendo-grid-column>
+  <kendo-grid-column field="IndSubg" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="SecType" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IssuerN" [width]="170" [filterable]='false' [resizable]='true'></kendo-grid-column>
+  <kendo-grid-column field="Moodys" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Fitch" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="DBRS" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="CollatT" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Curncy" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Security" [width]="120" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="sector" [width]="80" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="CUSIP" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Ticker" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Cpn" [width]="80" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Maturity" [width]="120" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="KRD_3YR" [width]="110" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="ZV_SPREAD" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="KRD_5YR" [width]="50" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="KRD_1YR" [width]="80" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IndGrou" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IndSect" [width]="100" [filterable]='false' [resizable]='true'></kendo-grid-column>
+  <kendo-grid-column field="IndSubg" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="SecType" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IssuerN" [width]="170" [filterable]='false' [resizable]='true'></kendo-grid-column>
+  <kendo-grid-column field="Moodys" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Fitch" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="DBRS" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="CollatT" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Curncy" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Security" [width]="120" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="sector" [width]="80" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="CUSIP" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Ticker" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Cpn" [width]="80" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Maturity" [width]="120" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="KRD_3YR" [width]="110" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="ZV_SPREAD" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="KRD_5YR" [width]="50" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="KRD_1YR" [width]="80" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IndGrou" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IndSect" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IndSubg" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="SecType" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IssuerN" [width]="170" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Moodys" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Fitch" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="DBRS" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="CollatT" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Curncy" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Security" [width]="120" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="sector" [width]="80" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="CUSIP" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Ticker" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Cpn" [width]="80" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Maturity" [width]="120" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="KRD_3YR" [width]="110" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="ZV_SPREAD" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="KRD_5YR" [width]="50" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="KRD_1YR" [width]="80" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IndGrou" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IndSect" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IndSubg" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="SecType" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="IssuerN" [width]="170" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Moodys" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Fitch" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="DBRS" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="CollatT" [width]="90" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Curncy" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Security" [width]="120" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="sector" [width]="80" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="CUSIP" [width]="100" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Ticker" [width]="60" [filterable]='false'></kendo-grid-column>
+  <kendo-grid-column field="Cpn" [width]="80" [filterable]='false'></kendo-grid-column>
+
+  <ng-template kendoGridToolbarTemplate>
+    <button type="button" kendoGridExcelCommand icon="file-excel">Export to Excel</button>
+  </ng-template>
+  <kendo-grid-excel fileName="Products.xlsx" [fetchData]="allData"></kendo-grid-excel>
+</kendo-grid>

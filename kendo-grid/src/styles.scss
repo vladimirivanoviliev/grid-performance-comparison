@@ -1,0 +1,118 @@
+/* You can add global styles to this file, and also import other style files */
+
+.k-grid-table {
+  td {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  td.numeric {
+    text-align: right;
+  }
+
+  .fintech-icons {
+    display: flex;
+    justify-content: flex-end;
+
+    .k-icon {
+      flex: 0 1 auto;
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-left: 4px;
+    }
+  }
+
+  .changePositive,
+  .changeNegative,
+  .strongPositive,
+  .strongNegative {
+    color: #fff !important;
+    padding: 2px 5px;
+  }
+
+  .positive {
+    color: #4eb862 !important;
+  }
+
+  .positive.strongPositive {
+    color: rgba(78, 184, 98, 0.8) !important;
+  }
+
+  .negative {
+    color: #d31642 !important;
+  }
+
+  .negative.strongNegative {
+    color: rgba(255, 19, 74, 0.8) !important;
+  }
+
+  .strongNegative {
+    color: #fff;
+  }
+
+  .change {
+    .changePositive {
+      border-right: 4px solid #335e3b;
+      padding-right: 4px;
+    }
+
+    .changeNegative {
+      border-right: 4px solid #7a1c32;
+      padding-right: 4px;
+    }
+
+    .strongPositive {
+      border-right: 4px solid #459a55;
+      padding-right: 4px;
+    }
+
+    .strongNegative {
+      border-right: 4px solid #d31642;
+      padding-right: 4px;
+    }
+  }
+}
+
+  .controls-holder {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+  }
+  .switches {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex: 1 0 0%;
+      min-width: 500px;
+      padding-right: 20px;
+      font-size: 0.9rem;
+      margin-bottom: -20px;
+  }
+  .control-item {
+      padding-right: 20px;
+  }
+  .k-slider {
+      height: 24px;
+      display: block;
+  }
+  .fintech-slider {
+      width: 40%;
+      min-width: 145px;
+  }
+  .fintech-play-controls {
+      width: 45%;
+      min-width: 500px;
+      margin-top: 20px;
+
+      button {
+        width: 200px;
+      }
+  }
+  .sample-toolbar {
+      height: 20px;
+      font-size: 0.8rem;
+      line-height: 20px;
+  }

@@ -49,9 +49,9 @@ This folder contains four versions of the [Angular FinTech Grid App](https://www
 ## Test results
 
 **Test machine:**
-- turbo boost disabled
-- chrome 78 incognito mode
-- i7 6700HQ @ 2.6ghz constant
+- using production builds
+- Chrome: 80.0.3987.87 (Official Build) (64-bit) (incognito mode)
+- i7 6700HQ @ 2.6ghz - turbo boost and speed scalling **disabled**
 - Quadro M1000 GPU
 - Ubuntu 19.10
 
